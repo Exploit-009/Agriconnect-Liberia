@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream-50 text-forest-900 font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-leaf-500;
+  }
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    input[type="text"],
+    input[type="search"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      font-size: 14px;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-forest-600 px-5 py-3 text-sm font-semibold text-white shadow-soft transition-all hover:bg-forest-700 hover:shadow-card active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-forest-700 shadow-soft ring-1 ring-forest-200 transition-all hover:bg-forest-50 active:scale-[0.98];
+  }
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-5 py-3 text-sm font-semibold text-forest-900 shadow-soft transition-all hover:bg-gold-400 active:scale-[0.98];
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-forest-700 transition-colors hover:bg-forest-50;
+  }
+  .card {
+    @apply rounded-2xl bg-white shadow-card transition-all;
+  }
+  .input-field {
+    @apply w-full rounded-xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 placeholder:text-forest-300 transition-colors focus:border-leaf-500 focus:ring-2 focus:ring-leaf-200;
+  }
+  .label-field {
+    @apply mb-1.5 block text-sm font-semibold text-forest-800;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all;
+  }
+  .section-padding {
+    @apply px-3 sm:px-6 lg:px-8;
+  }
+}
