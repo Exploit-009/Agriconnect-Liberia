@@ -1,139 +1,166 @@
-# AgriConnect Liberia
+AgriConnect Liberia
 
-An independent agricultural marketplace prototype for Liberia, designed for demonstration at an agricultural innovation hackathon.
+An independent agricultural marketplace prototype connecting farmers and buyers across Liberia.
 
-## Important disclaimers
+Project Status and Safety
 
-- **Independent project.** Not affiliated with, endorsed by, or partnered with the World Bank, any government agency, or any hackathon organiser.
-- **Prototype.** All produce listings, farmer profiles, prices, contact details, and enquiries are **demo data** — invented for demonstration. No real transactions, payments, or deliveries occur.
-- **No real data.** No real farmers, verified suppliers, or actual buyer enquiries are represented.
+- Independent prototype: Not affiliated with, endorsed by, or partnered with the World Bank, any government agency, or any hackathon organiser.
+- Verify information: Confirm listings, farmer profiles, prices, contact details, and any demonstration seed data before relying on them.
+- Payments: The app records and reports direct mobile-money payments between buyers and farmers but does not hold funds or process Orange Money or Lonestar MTN transactions. Verify transfers through your own mobile-money provider; reported payments are not automatically verified.
+- Protect credentials and data: Never commit ".env" files, Supabase service-role keys, passwords, access tokens, private keys, mobile-money PINs, one-time codes, or real customer data. Frontend code may use only the Supabase publishable/anon key. Enforce authorization with Supabase Row Level Security (RLS); interface controls are not a security boundary.
 
-## What it does
+Features
 
-- **Home page** — Brand header, navigation, search bar, popular categories, featured produce, how-it-works, and produce-by-county.
-- **Marketplace** — Working search, category filters, county filters, sort options, and responsive product cards.
-- **Product details** — Produce name, photos, county, farmer name, quantity, unit, price in Liberian dollars (LRD), harvest/availability info, and a buyer enquiry action.
-- **Farmer profiles** — Profile page with bio, specialties, and the farmer's active listings.
-- **List your produce** — A functional form with validation that adds listings to local prototype state.
-- **Buyer enquiry** — Form with required-field validation, accessible error messages, and a confirmation state (does not claim a message was actually delivered).
-- **Favorites** — Toggle favorites that persist in browser local storage when available.
-- **Agricultural tips** — General practical information clearly distinguished from verified expert advice.
-- **About page** — Project purpose, prototype status, and independent status.
-- **Moderation panel** — Simple demo interface for reviewing and removing sample listings.
+- Public marketplace: Browse agricultural products, search listings, filter by category, county, and organic status, and sort results.
+- Product details: View produce descriptions, farmer information, quantities, availability, and prices in Liberian dollars (LRD).
+- Authentication: Email/password registration and sign-in for farmer and buyer accounts.
+- Farmer listings: Farmers can create and manage their own product listings.
+- Buyer enquiries: Buyers can send enquiries about products.
+- Enquiry management: Farmers can view relevant enquiries and update their statuses.
+- Mobile-money workflow: Supports payment reporting, confirmation, dispute/cancellation workflows, and farmer payment-profile management.
+- Responsive interface: React-based interface for mobile and desktop screens.
+- Security controls: Supabase authentication and RLS policies are intended to restrict actions by user role and ownership.
 
-## Tech stack
+Technology Stack
 
-- React + TypeScript
-- Vite (build tool)
-- Tailwind CSS (styling)
-- Lucide React (icons)
-- No paid services, APIs, or billing required. US$0 budget.
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- Lucide React
+- Supabase Authentication
+- Supabase PostgreSQL database
+- Supabase Row Level Security (RLS)
 
-## Getting started
+Project Structure
 
-### Prerequisites
+Agriconnect-Liberia/
+├── public/
+│   └── favicon.svg
+├── src/
+│   ├── components/
+│   ├── hooks/
+│   ├── lib/
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── index.css
+│   └── types.ts
+├── supabase/
+│   └── migrations/
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── tsconfig.app.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
 
-- Node.js 18 or higher
-- npm (comes with Node.js)
+The exact directory contents may change as development continues.
 
-### Running locally
+Environment Configuration
 
-```bash
+Create a ".env" file in the project root and exclude it from GitHub.
+
+Configure the following variables using values from your own Supabase project:
+
+VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY
+
+Replace the placeholders with the correct project URL and publishable/anon key.
+
+Security requirements:
+
+- Never place a Supabase service-role key in frontend code or any "VITE_*" environment variable.
+- Never publish passwords, access tokens, private keys, or real customer data.
+- Enforce access controls with Supabase RLS policies; hiding interface buttons is not sufficient.
+
+Getting Started
+
+Prerequisites
+
+- Node.js
+- npm
+- A Supabase project with the required schema and migrations applied
+
+Install Dependencies
+
 npm install
+
+Start the Development Server
+
 npm run dev
-```
 
-The app will be available at the URL shown in the terminal (typically `http://localhost:5173`).
+Vite will display the local development URL in the terminal.
 
-### Building for production
+Validation
 
-```bash
-npm run build
-npm run preview
-```
+Run the following commands before deployment:
 
-The built files will be in the `dist/` directory.
+Type Checking
 
-### Type checking
-
-```bash
 npm run typecheck
-```
 
-### Linting
+Production Build
 
-```bash
+npm run build
+
+Linting
+
 npm run lint
-```
 
-## Project structure
+The production build is generated in the "dist/" directory.
 
-```
-src/
-  components/     # Reusable UI components (Header, Footer, ProduceCard, etc.)
-  hooks/          # Custom hooks (router, favorites, listings)
-  pages/          # Page components (Home, Marketplace, ProductDetail, etc.)
-  lib/            # Utility functions
-  data.ts         # Demo data (produce, farmers, tips)
-  types.ts        # TypeScript type definitions
-  App.tsx         # Root component with routing
-  main.tsx        # Entry point
-  index.css       # Global styles + Tailwind
-```
+Database and Migrations
 
-## How routing works
+Database migrations are stored in "supabase/migrations/".
 
-This prototype uses a lightweight hash-based router (no external routing library). Navigation happens through `#/marketplace`, `#/product/p1`, etc. This keeps the project simple and dependency-free.
+Before applying migrations:
 
-## How local storage works
+1. Confirm that you selected the correct Supabase project.
+2. Inspect the existing database schema and data.
+3. Review migrations for destructive operations.
+4. Back up important existing data.
+5. Apply migrations in the correct order.
+6. Verify RLS policies for anonymous visitors, buyers, farmers, and cross-user access.
 
-- **Favorites** are stored under `agriconnect_favorites` in the browser's local storage.
-- **User-created listings** are stored under `agriconnect_user_listings`.
-- **Removed listing IDs** are stored under `agriconnect_removed_listings`.
+Do not reset the database or run destructive migrations against data you need to preserve.
 
-If local storage is unavailable (e.g. in a private browsing mode), the app still works — favorites and user listings simply won't persist across reloads.
+After applying migrations, test that:
 
-## Editing the demo data
+- Anonymous users can browse publicly available products.
+- Farmers can create and manage only their own listings.
+- Buyers can create and access only their own enquiries, subject to intended policies.
+- Farmers can view enquiries associated with their products and update only permitted fields.
+- Users cannot access or modify another user's private records.
+- Payment reports, confirmations, disputes, and cancellations follow intended authorization rules.
 
-All demo data is in `src/data.ts`:
-- `demoProduce` — The produce listings
-- `demoFarmers` — The farmer profiles
-- `demoTips` — The agricultural tips
+Mobile-Money Payments
 
-To add or change listings, edit the arrays in that file.
+AgriConnect Liberia supports direct payment arrangements between buyers and farmers using services such as Orange Money and Lonestar MTN Mobile Money.
 
-## Exporting the project
+The app does not automatically verify transfers because a user reports them. Confirm payments through your own provider and resolve disputes carefully. Never store mobile-money PINs, passwords, or one-time verification codes in the application.
 
-The production build (`npm run build`) produces a static `dist/` folder that can be hosted on any static file server or free hosting platform (Netlify, Vercel, GitHub Pages, etc.).
+Deployment Checklist
 
-## Connecting to a real database
+Before making the application available to real users:
 
-This prototype is designed to be extended into a real platform. Here is a roadmap:
+- [ ] Configure the correct Supabase project URL and publishable/anon key.
+- [ ] Confirm that all required migrations have been applied successfully.
+- [ ] Verify RLS policies and authentication role restrictions.
+- [ ] Run the typecheck and production build.
+- [ ] Test registration and sign-in for buyers and farmers.
+- [ ] Test product creation, editing, and deletion permissions.
+- [ ] Test enquiry creation and status updates.
+- [ ] Test payment reporting and dispute workflows.
+- [ ] Check the mobile layout on an Android phone.
+- [ ] Remove demonstration data or clearly label it.
+- [ ] Confirm that no secrets are committed to GitHub.
+- [ ] Configure appropriate production hosting and environment variables.
 
-### 1. Set up a database (e.g. Supabase — free tier)
+Project Independence
 
-Create tables for `produce`, `farmers`, `enquiries`, and `favorites`. The current `src/types.ts` already defines the shape of the data.
+AgriConnect Liberia is an independent project. References to agricultural innovation events are for context only and do not imply sponsorship, endorsement, or official affiliation.
 
-### 2. Add authentication
+License
 
-Use Supabase Auth (email/password) for farmer and buyer accounts. Replace the local-storage-based listing creation with authenticated database inserts.
-
-### 3. Replace local data with database queries
-
-Replace the `demoProduce` and `demoFarmers` imports with Supabase queries. The `useListings` hook in `src/hooks/useListings.ts` is the main place to make this change.
-
-### 4. Add a real enquiry system
-
-Instead of just showing a confirmation screen, store enquiries in the database and notify farmers via email or SMS.
-
-### 5. Add a payment gateway (if needed)
-
-Integrate Stripe or Mobile Money APIs for actual transactions. Only add this if the platform will handle real payments.
-
-### 6. Implement real moderation
-
-Move the moderation panel behind admin authentication with proper audit logging.
-
-## License
-
-This is a prototype project for demonstration purposes. Use freely for educational and hackathon contexts.
+No open-source license has been specified. Unless a license is added, do not assume that the code is licensed for unrestricted redistribution or commercial reuse.
