@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Product, EnquiryInput } from '@/types';
 import { X, Loader2, MessageSquare, Package } from 'lucide-react';
 
@@ -12,15 +12,25 @@ interface EnquiryModalProps {
 
 export function EnquiryModal({ product, isOpen, onClose, onSubmit, defaultPhone }: EnquiryModalProps) {
   const [message, setMessage] = useState('');
-
-  if (!isOpen || !product) return null;
   const [quantity, setQuantity] = useState('');
   const [phone, setPhone] = useState(defaultPhone || '');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Reset fields whenever a new enquiry is opened, while keeping every hook unconditional.
+  useEffect(() => {
+    if (!isOpen) return;
+    setMessage('');
+    setQuantity('');
+    setPhone(defaultPhone || '');
+    setSubmitting(false);
+    setError(null);
+  }, [isOpen, product?.id, defaultPhone]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!product || submitting) return;
+
     setSubmitting(true);
     setError(null);
 
@@ -38,17 +48,24 @@ export function EnquiryModal({ product, isOpen, onClose, onSubmit, defaultPhone 
       contact_phone: phone.trim(),
     };
 
-    const result = await onSubmit(input);
-    if (result.error) {
-      setError(result.error);
+    try {
+      const result = await onSubmit(input);
+      if (result.error) {
+        setError(result.error);
+        setSubmitting(false);
+      } else {
+        setMessage('');
+        setQuantity('');
+        setSubmitting(false);
+        onClose();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send enquiry. Please try again.');
       setSubmitting(false);
-    } else {
-      setMessage('');
-      setQuantity('');
-      setSubmitting(false);
-      onClose();
     }
   };
+
+  if (!isOpen || !product) return null;
 
   const inputClass = "w-full px-4 py-2.5 rounded-xl border border-stone-300 text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-sm";
   const labelClass = "block text-xs font-medium text-stone-600 mb-1.5";
@@ -66,14 +83,14 @@ export function EnquiryModal({ product, isOpen, onClose, onSubmit, defaultPhone 
               <p className="text-xs text-stone-500">{product.name}</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-500 transition-colors">
+          <button type="button" onClick={onClose} aria-label="Close enquiry form" className="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-500 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+            <div role="alert" className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
               {error}
             </div>
           )}
@@ -87,18 +104,18 @@ export function EnquiryModal({ product, isOpen, onClose, onSubmit, defaultPhone 
           </div>
 
           <div>
-            <label className={labelClass}>Quantity Needed</label>
-            <input className={inputClass} type="text" placeholder="e.g. 5 bags, 10 kg" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+            <label htmlFor="enquiry-quantity" className={labelClass}>Quantity Needed</label>
+            <input id="enquiry-quantity" className={inputClass} type="text" placeholder="e.g. 5 bags, 10 kg" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
           </div>
 
           <div>
-            <label className={labelClass}>Your Phone (for farmer to call back)</label>
-            <input className={inputClass} type="tel" placeholder="+231 ..." value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <label htmlFor="enquiry-phone" className={labelClass}>Your Phone (for farmer to call back)</label>
+            <input id="enquiry-phone" className={inputClass} type="tel" placeholder="+231 ..." value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
 
           <div>
-            <label className={labelClass}>Message to Farmer *</label>
-            <textarea className={inputClass + " resize-none"} rows={4} placeholder="I'm interested in buying your product. When can I collect it?" value={message} onChange={(e) => setMessage(e.target.value)} required />
+            <label htmlFor="enquiry-message" className={labelClass}>Message to Farmer *</label>
+            <textarea id="enquiry-message" className={inputClass + " resize-none"} rows={4} placeholder="I'm interested in buying your product. When can I collect it?" value={message} onChange={(e) => setMessage(e.target.value)} required />
           </div>
 
           <div className="flex gap-3 pt-2">
