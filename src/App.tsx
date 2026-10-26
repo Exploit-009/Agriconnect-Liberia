@@ -121,13 +121,24 @@ export default function App() {
     }
   };
 
+  
   const handleEnquireClick = (product: Product) => {
     if (!user) {
       setShowAuthModal(true);
       return;
     }
+
+    if (!product.farmer_id) {
+      showToast(
+        'This sample listing has no registered farmer to receive enquiries yet.',
+        'error'
+      );
+      return;
+    }
+
     setEnquiryProduct(product);
   };
+
 
   const handleEnquirySubmit = async (input: EnquiryInput): Promise<{ error: string | null }> => {
     if (!user) return { error: 'You must be signed in to send an enquiry.' };
@@ -138,9 +149,17 @@ export default function App() {
     return result;
   };
 
-  const handleStatusChange = (id: string, status: EnquiryStatus) => {
-    updateEnquiryStatus(id, status);
+  
+  const handleStatusChange = async (id: string, status: EnquiryStatus) => {
+    const result = await updateEnquiryStatus(id, status);
+
+    if (result.error) {
+      showToast('Failed to update enquiry status: ' + result.error, 'error');
+    } else {
+      showToast('Enquiry status updated.');
+    }
   };
+
 
   const handleEnquiryDelete = async (id: string) => {
     const result = await deleteEnquiry(id);
@@ -583,14 +602,24 @@ export default function App() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {filtered.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onClick={() => setSelectedProduct(product)}
-                    onDelete={canDeleteProduct(product) ? handleDelete : undefined}
-                    onEnquire={canEnquireProduct && !isOwnProduct(product) ? handleEnquireClick : undefined}
-                    canDelete={canDeleteProduct(product)}
-                    canEnquire={canEnquireProduct && !isOwnProduct(product)}
+  <ProductCard
+    key={product.id}
+    product={product}
+    onClick={() => setSelectedProduct(product)}
+    onDelete={canDeleteProduct(product) ? handleDelete : undefined}
+    onEnquire={
+      canEnquireProduct &&
+      !!product.farmer_id &&
+      !isOwnProduct(product)
+        ? handleEnquireClick
+        : undefined
+    }
+    canDelete={canDeleteProduct(product)}
+    canEnquire={
+      canEnquireProduct &&
+      !!product.farmer_id &&
+      !isOwnProduct(product)
+    }
                   />
                 ))}
               </div>
@@ -753,11 +782,23 @@ export default function App() {
       </footer>
 
       {/* Modals */}
-      <ProductDetailModal
-        product={selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-        onEnquire={canEnquireProduct && selectedProduct && !isOwnProduct(selectedProduct) ? handleEnquireClick : undefined}
-        canEnquire={canEnquireProduct && !!selectedProduct && !isOwnProduct(selectedProduct)}
+<ProductDetailModal
+  product={selectedProduct}
+  onClose={() => setSelectedProduct(null)}
+  onEnquire={
+    canEnquireProduct &&
+    selectedProduct &&
+    !!selectedProduct.farmer_id &&
+    !isOwnProduct(selectedProduct)
+      ? handleEnquireClick
+      : undefined
+  }
+  canEnquire={
+    canEnquireProduct &&
+    !!selectedProduct &&
+    !!selectedProduct.farmer_id &&
+    !isOwnProduct(selectedProduct)
+  }
       />
       <AddProductModal
         isOpen={showAddModal}
