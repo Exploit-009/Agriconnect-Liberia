@@ -150,15 +150,16 @@ export default function App() {
   };
 
   
-  const handleStatusChange = async (id: string, status: EnquiryStatus) => {
-    const result = await updateEnquiryStatus(id, status);
+  
+const handleStatusChange = async (id: string, status: EnquiryStatus) => {
+  const result = await updateEnquiryStatus(id, status);
 
-    if (result.error) {
-      showToast('Failed to update enquiry status: ' + result.error, 'error');
-    } else {
-      showToast('Enquiry status updated.');
-    }
-  };
+  if (result.error) {
+    showToast(`Failed to update enquiry status: ${result.error}`, 'error');
+  } else {
+    showToast('Enquiry status updated.');
+  }
+};
 
 
   const handleEnquiryDelete = async (id: string) => {
